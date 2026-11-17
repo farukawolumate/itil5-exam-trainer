@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+</head>
+<body>
+<title>ITIL 5 Exam Trainer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Lexend:wght@400;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: exam-paper workspace — dashboard of progress, then one question at a time with a numbered answer sheet */
+:root{
+  --paper:#f5f6f2; --surface:#ffffff; --sunk:#eceee8; --ink:#17201b; --muted:#5b665f; --line:#d7dbd3;
+  --accent:#1d6b57; --accent-ink:#ffffff; --accent-soft:#dcece5;
+  --pass:#1f7a3a; --pass-soft:#dff1e3; --fail:#b3261e; --fail-soft:#f8e1de; --flag:#a86200; --flag-soft:#f6e8d2;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#111613; --surface:#18201b; --sunk:#202a24; --ink:#e3eae5; --muted:#9aa89f; --line:#2e3a33;
+  --accent:#5cc3a2; --accent-ink:#0d1a15; --accent-soft:#1e3a30;
+  --pass:#6fd48c; --pass-soft:#1d3524; --fail:#ff8a7e; --fail-soft:#3d1f1c; --flag:#f0b25a; --flag-soft:#3a2c17;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#111613; --surface:#18201b; --sunk:#202a24; --ink:#e3eae5; --muted:#9aa89f; --line:#2e3a33;
+  --accent:#5cc3a2; --accent-ink:#0d1a15; --accent-soft:#1e3a30;
+  --pass:#6fd48c; --pass-soft:#1d3524; --fail:#ff8a7e; --fail-soft:#3d1f1c; --flag:#f0b25a; --flag-soft:#3a2c17;
+  color-scheme:dark}
+*{box-sizing:border-box}
+html{font-size:var(--root,100%)}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:1rem;line-height:1.6;padding-inline:16px;padding-block:20px 48px}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0;text-wrap:balance}
+h1{font-size:clamp(1.7rem,4vw,2.3rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.25rem;font-weight:700}
+h3{font-size:1rem;font-weight:700}
+p{margin:0}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.spread{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;background:var(--sunk);font-size:.82rem;color:var(--muted);white-space:nowrap}
+.chip b{color:var(--ink);font-family:var(--mono);font-weight:700}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 16px;font-weight:700}
+button:hover{border-color:var(--accent)}
+button:focus-visible,input:focus-visible,.opt:focus-within{outline:3px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+button.primary:hover{filter:brightness(1.07)}
+button.ghost{background:transparent}
+button:disabled{opacity:.5;cursor:not-allowed}
+.big{font-family:var(--display);font-size:3.2rem;font-weight:700;line-height:1}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-weight:700;font-size:.8rem}
+.pill.pass{background:var(--pass-soft);color:var(--pass)}
+.pill.fail{background:var(--fail-soft);color:var(--fail)}
+.pill.perfect{background:var(--accent);color:var(--accent-ink)}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+th{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.tablewrap{overflow-x:auto}
+.bar{height:8px;border-radius:4px;background:var(--sunk);overflow:hidden;min-width:60px}
+.bar>i{display:block;height:100%;background:var(--accent)}
+.bar.low>i{background:var(--fail)} .bar.mid>i{background:var(--flag)}
+.weak{display:grid;grid-template-columns:minmax(0,1fr) 110px 44px;gap:10px;align-items:center;font-size:.92rem}
+.empty{border:1px dashed var(--line);border-radius:var(--r);padding:18px;color:var(--muted)}
+svg text{fill:var(--muted);font-family:var(--mono);font-size:10px}
+/* exam */
+.examtop{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);padding-block:10px;border-bottom:1px solid var(--line)}
+.qtag{display:flex;gap:8px;flex-wrap:wrap}
+.prompt{font-size:1.12rem;white-space:pre-line;max-width:68ch}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;gap:12px;align-items:flex-start;border:1.5px solid var(--line);border-radius:var(--r);padding:12px 14px;cursor:pointer;background:var(--surface)}
+.opt:hover{border-color:var(--accent)}
+.opt input{margin-top:4px;accent-color:var(--accent);width:18px;height:18px;flex:none}
+.opt .l{font-family:var(--mono);font-weight:700;color:var(--muted);flex:none}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.nav{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:6px}
+.nav button{padding:6px 0;font-family:var(--mono);font-size:.82rem;font-weight:500;border-radius:6px}
+.nav button.ans{background:var(--accent-soft);border-color:var(--accent)}
+.nav button.flg{box-shadow:inset 0 -3px 0 var(--flag)}
+.nav button.cur{outline:2px solid var(--ink);outline-offset:1px}
+.nav button.ok{background:var(--pass-soft);border-color:var(--pass)}
+.nav button.bad{background:var(--fail-soft);border-color:var(--fail)}
+.timer.low{color:var(--fail)}
+.confirm{background:var(--flag-soft);border:1px solid var(--flag);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:10px}
+/* review */
+.rev{border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--surface)}
+.rev.bad{border-left:4px solid var(--fail)} .rev.good{border-left:4px solid var(--pass)}
+.ans-line{display:flex;gap:8px;align-items:flex-start;font-size:.95rem}
+.ans-line .k{font-weight:700;min-width:96px;flex:none}
+.ans-line.you .k{color:var(--fail)} .ans-line.right .k{color:var(--pass)}
+.expl{background:var(--sunk);border-radius:8px;padding:10px 12px;font-size:.93rem}
+.tabs{display:flex;gap:6px}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.gen{display:flex;flex-direction:column;gap:8px}
+.gen .step{display:flex;justify-content:space-between;gap:10px;font-size:.92rem;padding:8px 10px;border-radius:8px;background:var(--sunk)}
+.status{font-size:.9rem;padding:10px 12px;border-radius:8px;background:var(--sunk)}
+.status.err{background:var(--fail-soft);color:var(--fail)}
+.banner{background:var(--accent);color:var(--accent-ink);border-radius:var(--r);padding:18px 20px}
+@media (prefers-reduced-motion:no-preference){.opt,.nav button{transition:border-color .15s,background .15s}}
+@media (max-width:520px){.big{font-size:2.6rem}.weak{grid-template-columns:minmax(0,1fr) 70px 40px}}
+
+/* easy-read + practice feedback */
+:root[data-easy]{--body:"Lexend", "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif}
+:root[data-easy] body{line-height:1.85;letter-spacing:.02em;word-spacing:.14em}
+:root[data-easy] .prompt{max-width:58ch;font-size:1.18rem}
+:root[data-easy] .opt{padding:14px 16px}
+.opt.right{border-color:var(--pass);background:var(--pass-soft)}
+.opt.wrong{border-color:var(--fail);background:var(--fail-soft)}
+.opt.locked{cursor:default}
+.opt.locked:hover{border-color:inherit}
+.opt .mark{font-weight:700;white-space:nowrap;margin-left:auto;padding-left:8px}
+.opt.right .mark{color:var(--pass)} .opt.wrong .mark{color:var(--fail)}
+.optbody{display:flex;gap:8px;flex-wrap:wrap;align-items:baseline;min-width:0;flex:1}
+.feedback{border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:10px}
+.feedback.ok{background:var(--pass-soft);border:1.5px solid var(--pass)}
+.feedback.no{background:var(--fail-soft);border:1.5px solid var(--fail)}
+.verdict{font-family:var(--display);font-size:1.45rem;font-weight:700;line-height:1.2}
+.feedback.ok .verdict{color:var(--pass)} .feedback.no .verdict{color:var(--fail)}
+.hintbox{background:var(--flag-soft);border:1.5px solid var(--flag);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.hintbox b{color:var(--flag)}
+.simplebox{background:var(--accent-soft);border-radius:8px;padding:6px 10px;font-size:.85rem}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+.tools button{padding:7px 12px;font-size:.92rem}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;flex-wrap:wrap}
+.seg button{border:0;border-radius:0;padding:8px 14px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.setting{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;padding-block:4px;border-top:1px solid var(--line)}
+.modecards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.modecard{text-align:left;display:flex;flex-direction:column;gap:4px;padding:14px;font-weight:400}
+.modecard b{font-size:1.05rem}
+.modecard[aria-pressed="true"]{border:2px solid var(--accent);background:var(--accent-soft)}
+</style>
+
+<div class="wrap" id="app">
+  <header class="spread">
+    <div>
+      <p class="eyebrow">PeopleCert ITIL Foundation · Version 5</p>
+      <h1>ITIL 5 Exam Trainer</h1>
+    </div>
+    <div class="row">
+      <span class="chip"><b>40</b> questions</span>
+      <span class="chip"><b>60</b> min</span>
+      <span class="chip">pass <b>26</b></span>
+      <span class="chip">goal <b>40/40</b></span>
+    </div>
+  </header>
+  <main id="view"><div class="panel"><p class="muted">Loading your exams and results…</p></div></main>
+</div>
+
+<script>
+(() => {
+"use strict";
+const AREAS = [
+  {key:"Key terms", n:12, subs:["Products & services","Service offerings & interactions","Value, outcomes, costs & risks","Service relationships & roles","Service quality & SLAs"]},
+  {key:"Four Dimensions", n:4, subs:["Four Dimensions","PESTLE & holistic approach"]},
+  {key:"Lifecycle", n:4, subs:["Lifecycle activity purposes","Lifecycle nature"]},
+  {key:"Value System", n:16, subs:["Value System components","Guiding principles","Governance","Value chain terms","Activity success metrics","Management practices & guides","Continual improvement model"]},
+  {key:"Value streams", n:2, subs:["Value streams"]},
+  {key:"AI", n:1, subs:["AI"]},
+  {key:"Other frameworks", n:1, subs:["Other frameworks"]},
+];
+const BATCHES = [
+  {label:"Key terms", areas:["Key terms"]},
+  {label:"Value System", areas:["Value System"]},
+  {label:"Dimensions, lifecycle, value streams, AI, frameworks", areas:["Four Dimensions","Lifecycle","Value streams","AI","Other frameworks"]},
+];
+const REF = `ITIL FOUNDATION (VERSION 5) REFERENCE NOTES
+Exam: 40 MCQs, 60 min, pass 26, closed book. Weighting: Key terms 30%, Four Dimensions 10%, Lifecycle 10%, Value System 40%, Value streams 5%, AI 2.5%, Other frameworks 2.5%. 40% recall, 60% understanding. Styles: standard, missing word(s), list (choose 2 of 4 numbered statements; options like "1 and 2"; never negative), negative (rare).
+ITIL 5 vs ITIL 4: scope expanded to Digital Product and Service Management; sustainability added to service quality; digital product vendor role added; governance = engage stakeholders, evaluate, direct, monitor (ISO/IEC 38500:2024); value chain activities now discover, design, acquire, build, transition, operate, deliver, support (not plan/engage/obtain-build/improve); same 34 practices in 2 groups; CI model step 6 "Are we getting there?", step 7 "How do we keep the improvements relevant?"; new ITIL AI Capability Model (6Cs) added to the information and technology dimension.
+KEY TERMS: Digital product and service management: a set of specialized organizational capabilities for enabling value for customers in the form of digital products and services. Product: a configuration of an organization's resources designed to offer value for a consumer. Service: a means of enabling value co-creation by facilitating outcomes that consumers want to achieve, without the consumer having to manage specific costs and risks. Digital product: a combination of an organization's resources based on digital technology and designed to offer value to consumers. Digital service: a service that fully or largely relies on digital products. Digital services are always based on digital products; products provide capabilities, service offerings describe potential value; one product can enable many services and one service can rely on several products. Goods: tangible resources transferred or available for transfer from a provider to a consumer, together with ownership and associated rights and responsibilities. Lifecycle: the full set of stages, transitions, and associated statuses in the life of a service, product, practice, or other entity. Continual improvement: a recurring organizational activity performed at all levels to ensure the organization continually meets stakeholders' expectations.
+Service offering: a formal description of one or more services designed to address the needs of a target consumer group; may include goods, access to resources, and service actions; should be described from the consumer's perspective. Transfer of goods: ownership moves to consumer (rare in digital services; e.g. equipment, consumables). Access to resources: consumer uses provider's resources under agreed terms without ownership (cloud, applications, hotel rooms, vehicles). Service action: performed by provider or jointly by provider and consumer (service request fulfilment, user training, consultations, helping configure a device).
+Value: the perceived benefits, usefulness, and importance of something. Value co-creation: collaborative process by which providers, consumers and other stakeholders jointly create value through the use of products and services. Value for consumer is defined by their own needs, achieved through support of outcomes and optimization of costs and risks, subjective, influenced by experience, changes over time. Services can introduce new costs and risks and can hinder some outcomes; valuable only when positive effects outweigh negative. Cost: amount of money spent on a specific activity, resource, product or service (costs removed by the service vs costs imposed by the service). Risk: a possible event that could cause harm or loss, or make it more difficult to achieve objectives (risks removed/reduced vs imposed). Output: a tangible or intangible deliverable of an activity. Outcome: a result for a stakeholder enabled by one or more outputs. Providers produce outputs; value is realized through outcomes.
+Organization: a person or group of people with its own functions, responsibilities, authorities and relationships to achieve objectives (from self-employed individual to group of companies). Service provider: organization responsible for delivery and support of services. Service consumer: responsible for procurement and use of services; manages own resources, defines requirements, gives feedback. Digital product vendor: responsible for creation and continual improvement of digital products and related service offerings; can be same org as provider or different. Sponsor: authorizes budget for service consumption. Customer: defines requirements and takes responsibility for outcomes of service consumption. User: uses services. Basic relationship: support and efficiency; operational; commercial off-the-shelf/standardized services; standard contracts, SLAs. Cooperative: improvement and effectiveness; operational and tactical; configured/customized services; advanced SLAs, experience- or outcome-based agreements. Collaborative (partnership): innovation and growth; operational, tactical and strategic; bespoke services; bespoke contracts, outcome-based or no formal agreement; high trust. Service journey: the sum of activities and interactions performed by organizations engaged in service relationships to fulfil their roles as provider and consumer (what happens over time). Band of visibility: aspects of consumer visible to provider and of provider visible to consumer (what is seen). Service quality: the sum of the characteristics of a service relevant to its ability to satisfy stated and implied needs. Service level: a set of metrics that define expected or achieved service quality. Four categories, equally important: Utility = functionality to meet a need, 'what the service does', fit for purpose, supports performance or removes constraints. Warranty = assurance the product/service will meet agreed requirements, 'how it performs', fit for use, availability, capacity, security, continuity. User experience = sum of functional and emotional interactions with a service and provider as perceived by a user. Sustainability = assurance it meets and will continue to meet requirements for environmental stewardship, social progress and economic growth (recyclable materials, clean energy, low carbon, transparent supply chains). SLA: a documented agreement between a service provider and a customer that identifies the services provided and the agreed level of each service.
+FOUR DIMENSIONS: organizations and people (structure, roles, responsibilities, authority, communication, culture = set of values shared by a group expressed through behaviour, ideas, beliefs and practices; safety culture; leadership; skills; Conway's law); information and technology (data, information, technologies used in products/services and in the management system; knowledge bases, AI, automation; data governance; AI Capability Model); partners and suppliers (relationships with other organizations involved in discovery, design, build, transition, operation, delivery, support, improvement; contracts; sourcing models outsourcing/insourcing/multi-sourcing; supplier strategy factors); value streams and processes (organizational and cross-organizational workflows, what activities and how organized; remove waste, bottlenecks; process controls; complexity thinking). Holistic: a change in one dimension affects the others; apply at all levels. External PESTLE factors influence all four: political, economic, social, technological, legal (data protection, contracts), environmental.
+LIFECYCLE (eight activities, not sequential or linear, combined as stepping stones into value chains/value streams; organizations may do only some): Discover: ensure continual alignment of product roadmaps and service offerings with consumer needs and organizational strategy (metrics: strategic fit, market relevance, stakeholder satisfaction, commercial success; output updated roadmap; continual, at organizational/portfolio/product level). Design: create prototypes and specifications for products and services, detailing functionality, user experience and operational framework (metrics: quality of specs/prototypes, design cycle time, roadmap adherence, satisfaction). Acquire: secure and allocate necessary resources efficiently, ensuring sustainability and scalability (metrics: quality of resources and services, acquire cycle time). Build: develop, integrate and test digital products, transforming designs into functional solutions (metrics: quality of product solutions, build cycle). Transition: seamlessly introduce new or updated products into operational environments and ensure effective onboarding/offboarding of suppliers (metrics: transition cycle, negative impact on availability/performance, number and impact of transition errors). Operate: maintain and monitor digital products and supporting systems ensuring optimal performance and reliability; mostly behind the scenes (metrics: coverage/effectiveness of monitoring, reliability/performance/security, number and impact of incidents and performance deviations). Deliver: provide services to users, manage user onboarding/offboarding, maintain service quality standards, gather consumer feedback; service requests, SLAs (metrics: customer/user satisfaction, service performance against agreed SLA targets). Support: identify and resolve incidents, fulfil disaster recovery procedures, capture consumer feedback (metrics: speed of normal service restoration, negative impact of incidents/disasters, performance against SLA targets).
+VALUE SYSTEM: ITIL VS: a model representing how all components and activities of an organization work together to facilitate value creation through digital products and services. Purpose: ensure the organization continually and sustainably co-creates value with all stakeholders. Inputs: opportunity and demand; outcome: value. Five components: guiding principles, governance, value chain (central element), management practices, continual improvement. Each organization's VS interfaces with others forming an ecosystem.
+Governance: the system by which an organization is directed and controlled. Governance of digital technology: a human-based system by which the current and future use of digital technology is governed (directing, overseeing, accountability). Governing body: accountable at the highest level for performance and compliance (not day-to-day operations). Activities: Engage stakeholders (identify stakeholders, understand needs, commitments), Evaluate (performance, environment, strategy, portfolios, external factors, feedback), Direct (set strategy and policies, assign responsibility), Monitor (performance and compliance against policies and direction, KPIs/KRIs, audits).
+Guiding principles: recommendations that can guide an organization in all circumstances, regardless of changes in goals, strategies, type of work or management structure. Seven, no order or hierarchy, interact and depend on each other, use all, some more relevant in a situation. 1 Focus on value: all activities link back directly or indirectly to value for the organization, customers and other stakeholders (not just revenue); first know who the consumer is, why/how they use services, how they feel, costs and risks. 2 Start where you are: don't start over without considering what can be leveraged; observe directly (reports can be biased); measurement supports observation; sometimes nothing can be reused. 3 Progress iteratively with feedback: manageable and managed iterations, feedback before/during/after; benefits flexibility, faster response, earlier failure detection, better quality; fast does not mean incomplete. 4 Collaborate and promote visibility: right people in right roles, break silos, make work visible (Kanban, dashboards); collaboration does not mean consensus. 5 Think and work holistically: no product, service, practice, process, team or supplier stands alone; four dimensions, full lifecycle, supply chain, PESTLE. 6 Keep it simple and practical: minimum steps, outcome-based thinking, eliminate what adds no value, don't provide a solution for every exception (design rules to handle exceptions), empower through trust. 7 Optimize and automate: optimize/simplify before automating; automation for its own sake increases cost and risk; GenAI subject to governance, ethics, compliance.
+Value chain: an entire set of activities that enables value through the provision of a product or service. Organization's purpose: what an organization does for its consumers and other stakeholders and why. Operating model: a conceptual and/or visual representation of how an organization co-creates value with customers and stakeholders and how it runs itself (structured around four dimensions; the value chain is the top level of value streams and processes). Product/service specification: detailed document outlining critical aspects, requirements and characteristics of a product or service to be built (features, functions, technical requirements, performance criteria, UI). Product/service prototype: initial version demonstrating basic form, functionality and operational capabilities, used to test and refine design and test hypotheses. Event: any change of state that has significance for the management of a product, service or other configuration item. Incident: an unplanned interruption to a service or reduction in the quality of a service. Release: a version of a product, service or configuration item, or collection of CIs, made available for use. Change: addition, modification or removal of anything that could affect products and services. Testing: system or component executed under specified conditions, results observed/recorded, evaluation made. Continuous integration: techniques and tools enabling developers to frequently merge code into a central repository followed by automated builds and tests. Continuous delivery: software updates can be deployed to production at any time; deployment decisions taken case by case. Continuous deployment: every change that passes automated tests is automatically deployed to production without additional authorization; relies on continuous delivery. Reliability: ability to perform intended function for a specified period of time or number of cycles. SRE: discipline applying software engineering to infrastructure and operations problems to create scalable and highly reliable software systems. Observability: ability to understand the internal state of a complicated system by analysing external outputs such as metrics, logs and traces. Service request: a request from a user or authorized representative that initiates a service action agreed as a normal part of service delivery. Disaster: sudden unplanned event causing great damage or serious loss; critical business functions fail for a predetermined minimum period. Problem: a cause, or potential cause, of one or more incidents. Error: a flaw or vulnerability that may cause incidents. Known error: a problem that has been analysed but has not been resolved (often with workaround). Problem -> error -> known error = successive levels of understanding.
+Management practice: a set of organizational resources and capabilities designed and adopted for performing work or accomplishing an objective. 34 practices: 22 product and service management practices (availability, business analysis, capacity and performance, change enablement, deployment, incident, information security, infrastructure and platform, IT asset, monitoring and event, problem, release, service catalogue, service configuration, service continuity, service design, service desk, service financial, service level, service request, service validation and testing, software development and management) and 12 general management practices (architecture, continual improvement, knowledge, measurement and reporting, organizational change, portfolio, project, relationship, risk, strategy, supplier, workforce and talent). Practices enable (directly involved) or support (provide information/methods) value chain activities; used flexibly, no fixed sequence; combine resources from the four dimensions. Practice Guide structure: General information (purpose, key terms, scope, success factors, key metrics); Value streams and processes; Organizations and people (roles, competencies, responsibilities, teams); Information and technology (key information, automation and tooling); Partners and suppliers (dependencies, third-party support); Capability assessment and development (ITIL Maturity Model, capability criteria, self-assessment); Recommendations for practice success (mapped to guiding principles). Benefits: consistent, comprehensive, practical, modular and adaptable. Metric: a measurement or calculation monitored or reported for management and improvement. CSF: a necessary precondition for the achievement of intended results. KPI: important metric used to evaluate success in meeting an objective. Baseline: starting point against which progress is assessed.
+Continual Improvement Model: 1 What is the vision? (link to organization goals, high-level vision, stakeholders understand expected value) 2 Where are we now? (assess current state, baseline: services, perception of value, skills, workflows, technology, culture) 3 Where do we want to be? (target state, Point B, CSFs and KPIs, SMART) 4 How do we get there? (plan route, iterate, hypotheses and experiments if path unclear) 5 Take action (actions and experiments in sequence, simultaneously or independently; measure progress; revisit earlier steps) 6 Are we getting there? (assess progress against objectives; if no SMART objectives check direction) 7 How do we keep the improvements relevant? (embed via change and knowledge management, leaders help adoption; if targets missed inform stakeholders, share lessons learned, no blame). Steps not strictly linear; clear vs discovery perspectives.
+VALUE STREAMS: Value stream: a series of steps an organization uses to create and deliver products and services to a service consumer. Core value stream: enables value for consumers in a form intended by the operating model. Enabling value stream: enables value for internal customers to support core value streams (e.g. internal payroll). Value stream mapping: technique for visual representation and analysis of value streams; steps: identify the value stream, map 'as-is', analyse, map 'to-be', plan and implement improvements; a diagnostic, often one-off starting point that identifies and prioritizes improvement opportunities. Value stream management: the practice of overseeing value streams on a continual basis ('management of' and 'management through' value streams), supported by automation and measurement. Map metrics: cycle time (one step), wait time (between steps), lead time (total from initiation to delivery), flow efficiency (percentage of cycle time in lead time). Complexity thinking: approach to analysis and decision-making based on recognizing levels of complexity in systems and context; four contexts: ordered, complex, chaotic, confused; optimize workflows for complexity (flexible, fewer handoffs, fast feedback).
+AI: Artificial Intelligence: capability of digital systems to perform tasks that normally require human intelligence (learning, patterns, predictions, decisions). AI maturity: extent to which an organization can effectively, responsibly and consistently use AI (governance, data quality, skills, processes, ethics). GenAI: creates new content (text, images, code) from learned patterns. Agentic AI: acts on behalf of users by autonomously performing predefined tasks within agreed boundaries, subject to human oversight and governance. AI governance: system by which an organization directs, controls and monitors the use of AI so AI-enabled products and services create value while remaining ethical, secure, compliant and aligned. ITIL AI Capability Model (functional classification of AI solutions, helps tailor risk profiles and controls; not a compliance standard or ROI tool): Creation (generates new content: answers, release notes, SLA drafts, workflows), Curation (improves quality of existing data/knowledge: flags obsolete articles, duplicates, SLA vs contract discrepancies), Clarification (summarizes, rewrites, translates), Cognition (patterns, anomalies, forecasting, trends, bottlenecks), Communication (chatbots, virtual agents, personalized messages, surveys), Coordination (autonomously triages, routes, escalates, triggers remediation). AI can support all eight value chain activities.
+OTHER FRAMEWORKS: ITIL provides the management framework (value, governance, roles, consistency, risk); DevOps provides practical techniques (automation, CI/CD, collaboration between development and operations) enabling discover, design, acquire, build, transition, operate. Project management matters because many changes are delivered through projects; PRINCE2 provides structured governance for projects/programmes/portfolios that introduce change (how change is delivered); ITIL ensures the outcomes are managed as services creating value over time; PRINCE2 Agile combines structure with agile.`;
+
+const $view = document.getElementById("view");
+let db = null, sample = null;
+let exams = [], attempts = [];
+let loadedExams = false, loadedAttempts = false;
+let view = "home", reviewFilter = "missed", lastAttemptId = null;
+let run = null; // in-progress exam {examId, idx, answers[], flags[], startedAt}
+let gen = null; // generation state
+let confirmOpen = false, saving = false, saveError = "";
+let tick = null;
+
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const L = ["A","B","C","D"];
+const fmtDate = iso => { try { return new Date(iso).toLocaleDateString(undefined,{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}); } catch { return ""; } };
+const mmss = s => { s = Math.max(0, Math.round(s)); return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); };
+const prefs = (() => { const p = {mode:"practice", size:1.15, easy:true}; try { Object.assign(p, JSON.parse(localStorage.getItem("itil-prefs")||"{}")); } catch {} return p; })();
+function applyPrefs(){ const r = document.documentElement; r.style.setProperty("--root", Math.round(prefs.size*100)+"%"); if (prefs.easy) r.setAttribute("data-easy",""); else r.removeAttribute("data-easy"); }
+function savePrefs(){ try { localStorage.setItem("itil-prefs", JSON.stringify(prefs)); } catch {} applyPrefs(); }
+applyPrefs();
+const canSpeak = (() => { try { return "speechSynthesis" in window && typeof SpeechSynthesisUtterance === "function"; } catch { return false; } })();
+function speak(text){ if (!canSpeak) return; try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.rate = 0.9; u.lang = "en-GB"; speechSynthesis.speak(u); } catch {} }
+function hush(){ if (canSpeak) try { speechSynthesis.cancel(); } catch {} }
+const aiHints = {}, simple = {}, showSimple = {};
+const qkey = () => run.examId + ":" + run.idx;
+function fixRun(r){ if (!r) return r; const n = r.answers.length; r.mode = r.mode || "exam"; if (!Array.isArray(r.hinted) || r.hinted.length !== n) r.hinted = Array(n).fill(false); return r; }
+const store = {
+  get(){ try { return JSON.parse(localStorage.getItem("itil-run")||"null"); } catch { return null; } },
+  set(v){ try { v ? localStorage.setItem("itil-run", JSON.stringify(v)) : localStorage.removeItem("itil-run"); } catch {} }
+};
+
+function examById(id){ return exams.find(e => e.id === id); }
+function attemptsFor(id){ return attempts.filter(a => a.examId === id); }
+function nextExam(){ return exams.find(e => attemptsFor(e.id).length === 0); }
+function bestScore(){ return attempts.reduce((m,a) => Math.max(m, a.score||0), 0); }
+
+// Weakness: aggregate bySub over the last 3 attempts
+function weakness(){
+  const recent = attempts.slice(0, 3);
+  const agg = {};
+  for (const a of recent) for (const [sub, v] of Object.entries(a.bySub || {})) {
+    agg[sub] = agg[sub] || {c:0,t:0}; agg[sub].c += v.c; agg[sub].t += v.t;
+  }
+  return Object.entries(agg).map(([sub,v]) => ({sub, c:v.c, t:v.t, pct: v.t ? v.c/v.t : 1}))
+    .sort((a,b) => a.pct - b.pct || b.t - a.t);
+}
+
+/* ---------- render ---------- */
+function render(){
+  if (view === "exam" && run && examById(run.examId)) return renderExam();
+  if (view === "results") return renderResults();
+  view = "home"; return renderHome();
+}
+
+function sparkline(){
+  const pts = attempts.slice().reverse();
+  if (pts.length < 1) return "";
+  const W = 520, H = 150, pl = 28, pr = 10, pt = 10, pb = 22;
+  const x = i => pts.length === 1 ? pl + (W-pl-pr)/2 : pl + i*(W-pl-pr)/(pts.length-1);
+  const y = v => pt + (1 - v/40)*(H-pt-pb);
+  const line = pts.map((a,i) => (i?"L":"M")+x(i).toFixed(1)+" "+y(a.score).toFixed(1)).join(" ");
+  const area = line + ` L${x(pts.length-1).toFixed(1)} ${y(0)} L${x(0).toFixed(1)} ${y(0)} Z`;
+  const last = pts[pts.length-1];
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Score history">
+    <line x1="${pl}" x2="${W-pr}" y1="${y(40)}" y2="${y(40)}" stroke="var(--accent)" stroke-dasharray="4 4" stroke-width="1"/>
+    <line x1="${pl}" x2="${W-pr}" y1="${y(26)}" y2="${y(26)}" stroke="var(--flag)" stroke-dasharray="4 4" stroke-width="1"/>
+    <line x1="${pl}" x2="${W-pr}" y1="${y(0)}" y2="${y(0)}" stroke="var(--line)" stroke-width="1"/>
+    <text x="0" y="${y(40)+3}">40</text><text x="0" y="${y(26)+3}">26</text><text x="6" y="${y(0)+3}">0</text>
+    <path d="${area}" fill="var(--accent-soft)" stroke="none"/>
+    <path d="${line}" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linejoin="round"/>
+    ${pts.map((a,i)=>`<circle cx="${x(i)}" cy="${y(a.score)}" r="${a===last?5:3}" fill="${a===last?"var(--accent)":"var(--surface)"}" stroke="var(--accent)" stroke-width="2"/>`).join("")}
+    <text x="${pl}" y="${H-4}">attempt 1</text><text x="${W-pr}" y="${H-4}" text-anchor="end">latest</text>
+  </svg>`;
+}
+
+function genPanel(){
+  if (!gen) return "";
+  return `<div class="gen" aria-live="polite">
+    <p class="eyebrow">Building exam ${gen.n}</p>
+    ${gen.steps.map(s => `<div class="step"><span>${esc(s.label)}</span><span class="mono">${s.state === "done" ? "✓ "+s.got : s.state === "error" ? "failed" : s.state === "run" ? "writing…" : "waiting"}</span></div>`).join("")}
+    ${gen.error ? `<p class="status err">${esc(gen.error)}</p>` : `<p class="status">Claude is writing new questions aimed at your weak spots. This usually takes 1–3 minutes.</p>`}
+    <div class="row">${gen.error ? `<button class="primary" data-act="gen">Try again</button>` : ""}${gen.running ? `<button data-act="stopgen">Stop</button>` : `<button class="ghost" data-act="closegen">Close</button>`}</div>
+  </div>`;
+}
+
+function renderHome(){
+  const loaded = loadedExams && loadedAttempts;
+  const latest = attempts[0];
+  const nxt = nextExam();
+  const weak = weakness().filter(w => w.pct < 1).slice(0, 6);
+  const best = bestScore();
+  const perfect = attempts.some(a => a.score === 40);
+  let nextHtml;
+  if (!db) nextHtml = `<p class="status err">Your saved exams can't be reached in this view. Open the page in Claude while signed in.</p>`;
+  else if (!loaded) nextHtml = `<p class="muted">Loading…</p>`;
+  else if (gen) nextHtml = genPanel();
+  else if (nxt) {
+    const fromRun = run && run.examId === nxt.id;
+    nextHtml = `<div class="spread"><div><h2>Exam ${nxt.n}</h2><p class="muted">${nxt.questions.length} questions${nxt.focus?.length ? " · focus: "+esc(nxt.focus.slice(0,3).join(", ")) : ""}</p></div>
+      <button class="primary" data-act="start" data-id="${esc(nxt.id)}">${fromRun ? "Resume exam" : prefs.mode === "practice" ? "Start in practice mode" : "Start in exam mode"}</button></div>`;
+  } else if (exams.length === 0 && !sample) {
+    nextHtml = `<div class="empty">No exams yet. Ask Claude in your chat to add the next exam here.</div>`;
+  } else {
+    nextHtml = `<div class="spread"><div><h2>Exam ${exams.length + 1}</h2><p class="muted">${latest ? "Built from the questions you missed most recently." : "A fresh 40-question exam."}</p></div>
+      ${sample ? `<button class="primary" data-act="gen">Build my next exam</button>` : ""}</div>
+      ${sample ? "" : `<p class="muted">Ask Claude in your chat for the next exam. It can read your results here.</p>`}`;
+  }
+
+  $view.innerHTML = `<div class="wrap" style="padding:0">
+    ${perfect ? `<div class="banner"><h2>You scored 40/40.</h2><p>Goal reached. Keep taking fresh exams to make sure it sticks.</p></div>` : ""}
+    <div class="panel"><p class="eyebrow">Up next</p>${nextHtml}</div>
+    ${settingsPanel()}
+    <div class="grid2">
+      <section class="panel" aria-labelledby="h-prog">
+        <h2 id="h-prog">Progress to 40/40</h2>
+        ${latest ? `<div class="row" style="align-items:flex-end;gap:18px">
+            <div><p class="eyebrow">Latest</p><p class="big mono">${latest.score}<span class="muted" style="font-size:1.2rem">/40</span></p></div>
+            <div><p class="eyebrow">Best</p><p class="mono" style="font-size:1.6rem;font-weight:700">${best}</p></div>
+            <div><p class="eyebrow">Attempts</p><p class="mono" style="font-size:1.6rem;font-weight:700">${attempts.length}</p></div>
+          </div>${sparkline()}
+          <p class="muted" style="font-size:.85rem">Dashed lines: pass mark (26) and your goal (40).</p>`
+        : `<div class="empty">Your scores will appear here after your first exam.</div>`}
+      </section>
+      <section class="panel" aria-labelledby="h-weak">
+        <h2 id="h-weak">Weak spots</h2>
+        <p class="muted" style="font-size:.9rem">From your last ${Math.min(3, attempts.length) || 3} attempts. The next exam puts extra questions on these.</p>
+        ${weak.length ? weak.map(w => `<div class="weak"><span>${esc(w.sub)}</span>
+            <div class="bar ${w.pct<.6?"low":w.pct<.85?"mid":""}"><i style="width:${Math.round(w.pct*100)}%"></i></div>
+            <span class="mono" style="text-align:right">${Math.round(w.pct*100)}%</span></div>`).join("")
+          : `<div class="empty">${attempts.length ? "No weak spots in your recent attempts." : "Take an exam to see which topics need work."}</div>`}
+      </section>
+    </div>
+    <section class="panel" aria-labelledby="h-hist">
+      <h2 id="h-hist">Your results</h2>
+      ${attempts.length ? `<div class="tablewrap"><table><thead><tr><th>Exam</th><th>Date</th><th class="num">Score</th><th>Result</th><th></th></tr></thead><tbody>
+        ${attempts.map(a => `<tr><td>Exam ${a.examN}${a.mode === "practice" ? ` <span class="muted" style="font-size:.8rem">practice</span>` : ""}</td><td>${fmtDate(a.finishedAt)}</td><td class="num">${a.score}/${a.total}</td>
+          <td>${pill(a)}</td><td style="text-align:right"><button class="ghost" data-act="review" data-id="${esc(a.id)}">Review</button></td></tr>`).join("")}
+      </tbody></table></div>` : `<div class="empty">No attempts yet.</div>`}
+      ${exams.length ? `<div class="row" style="margin-top:4px"><span class="muted" style="font-size:.9rem">Retake:</span>${exams.map(e => `<button class="ghost" data-act="start" data-id="${esc(e.id)}">Exam ${e.n}</button>`).join("")}</div>` : ""}
+    </section>
+  </div>`;
+}
+
+function settingsPanel(){
+  const seg = (act, val, label, on) => `<button data-act="${act}" data-v="${val}" aria-pressed="${on}">${label}</button>`;
+  return `<section class="panel" aria-labelledby="h-set">
+    <h2 id="h-set">How you practise</h2>
+    <div class="modecards">
+      <button class="modecard" data-act="mode" data-v="practice" aria-pressed="${prefs.mode==="practice"}"><b>Practice mode</b><span class="muted">See if you are right after every question. Hints and help are on.</span></button>
+      <button class="modecard" data-act="mode" data-v="exam" aria-pressed="${prefs.mode==="exam"}"><b>Exam mode</b><span class="muted">Like the real exam. 60-minute timer. You see the answers at the end.</span></button>
+    </div>
+    <div class="setting"><span>Text size</span><div class="seg">${seg("size","1","Normal",prefs.size===1)}${seg("size","1.15","Large",prefs.size===1.15)}${seg("size","1.3","Extra large",prefs.size===1.3)}</div></div>
+    <div class="setting"><span>Easy-read text<br><span class="muted" style="font-size:.85rem">Clearer letters and more space between words</span></span><div class="seg">${seg("easy","1","On",prefs.easy)}${seg("easy","0","Off",!prefs.easy)}</div></div>
+    ${canSpeak ? `<p class="muted" style="font-size:.9rem">Tip: press <b>Read aloud</b> on any question to hear it.</p>` : ""}
+  </section>`;
+}
+
+function pill(a){
+  if (a.score === a.total) return `<span class="pill perfect">40/40</span>`;
+  return a.score >= 26 ? `<span class="pill pass">Pass</span>` : `<span class="pill fail">Below pass</span>`;
+}
+
+function renderExam(){
+  const ex = examById(run.examId);
+  const i = run.idx, q = ex.questions[i];
+  const practice = run.mode === "practice";
+  const chosen = run.answers[i];
+  const locked = practice && chosen >= 0;
+  const answered = run.answers.filter(v => v >= 0).length;
+  const rightSoFar = ex.questions.reduce((n,qq,k) => n + (run.answers[k] === qq.answer ? 1 : 0), 0);
+  const remain = 3600 - (Date.now() - run.startedAt)/1000;
+  const key = qkey();
+  const sv = showSimple[key] && simple[key]?.prompt ? simple[key] : null;
+  const prompt = sv ? sv.prompt : q.prompt;
+  const opts = sv ? sv.options : q.options;
+  const hintOn = run.hinted[i];
+  const hintText = q.hint || aiHints[key]?.text;
+  const last = i === ex.questions.length - 1;
+  const optCls = k => locked ? (k === q.answer ? "right locked" : k === chosen ? "wrong locked" : "locked") : (chosen === k ? "sel" : "");
+  const optMark = k => !locked ? "" : k === q.answer ? `<span class="mark">✓ Right answer</span>` : k === chosen ? `<span class="mark">✗ Your answer</span>` : "";
+  $view.innerHTML = `<div class="wrap" style="padding:0">
+    <div class="examtop spread">
+      <div><p class="eyebrow">Exam ${ex.n} · ${practice ? "Practice mode" : "Exam mode"}</p><h2>Question ${i+1} <span class="muted mono" style="font-size:1rem">of ${ex.questions.length}</span></h2></div>
+      <div class="row">
+        ${practice ? `<span class="chip">right <b>${rightSoFar}</b> of <b>${answered}</b></span>`
+          : `<span class="chip">answered <b id="answeredN">${answered}</b></span><span class="chip timer ${remain < 300 ? "low" : ""}" id="timer">${remain > 0 ? "time left <b>"+mmss(remain)+"</b>" : "<b>time's up</b>"}</span>`}
+        <button data-act="exit" class="ghost">Save &amp; exit</button>
+        <button class="primary" data-act="askSubmit">${practice ? "Finish" : "Submit"}</button>
+      </div>
+    </div>
+    ${confirmOpen ? `<div class="confirm" role="alertdialog" aria-label="Finish exam">
+        <p><b>Finish Exam ${ex.n}?</b> ${ex.questions.length - answered ? `${ex.questions.length - answered} question(s) have no answer. They will count as wrong.` : "You have answered every question."}</p>
+        ${saveError ? `<p class="status err">${esc(saveError)}</p>` : ""}
+        <div class="row"><button class="primary" data-act="submit" ${saving?"disabled":""}>${saving ? "Saving…" : "Finish and see my score"}</button><button data-act="cancelSubmit">Keep going</button></div>
+      </div>` : ""}
+    <section class="panel">
+      <div class="qtag"><span class="chip">${esc(q.area)}</span><span class="chip">${esc(q.sub)}</span>${run.flags[i] ? `<span class="chip" style="color:var(--flag)">flagged</span>` : ""}${hintOn ? `<span class="chip" style="color:var(--flag)">hint used</span>` : ""}</div>
+      ${sv ? `<p class="simplebox">Showing this question in simpler words. <button class="ghost" data-act="simple" style="padding:2px 8px;font-size:.85rem">Show original</button></p>` : ""}
+      <p class="prompt">${esc(prompt)}</p>
+      <div class="tools">
+        ${canSpeak ? `<button data-act="readq">🔊 Read aloud</button>` : ""}
+        ${practice && !locked ? `<button data-act="hint" ${hintOn ? "disabled" : ""}>💡 ${hintOn ? "Hint shown" : "Show a hint"}</button>` : ""}
+        ${sample && !locked ? `<button data-act="simple" ${simple[key]?.loading ? "disabled" : ""}>${simple[key]?.loading ? "Rewriting…" : sv ? "Show original words" : "Say it more simply"}</button>` : ""}
+      </div>
+      ${simple[key]?.error && !sv ? `<p class="status err">${esc(simple[key].error)}</p>` : ""}
+      ${hintOn && practice && !locked ? `<div class="hintbox" aria-live="polite"><b>Hint</b><span>${hintText ? esc(hintText) : aiHints[key]?.loading ? "Getting a hint…" : esc(aiHints[key]?.error || "There is no hint for this question.")}</span></div>` : ""}
+      <div class="opts" role="radiogroup" aria-label="Answer options">
+        ${opts.map((o,k) => `<label class="opt ${optCls(k)}"><input type="radio" name="q${i}" id="q${i}o${k}" value="${k}" ${chosen===k?"checked":""} ${locked?"disabled":""}><span class="l">${L[k]}</span><span class="optbody"><span>${esc(o)}</span>${optMark(k)}</span></label>`).join("")}
+      </div>
+      ${locked ? `<div class="feedback ${chosen === q.answer ? "ok" : "no"}" aria-live="polite">
+          <p class="verdict">${chosen === q.answer ? "✓ Right!" : "✗ Not right this time"}</p>
+          ${chosen === q.answer ? "" : `<p>The right answer is <b>${L[q.answer]}: ${esc(q.options[q.answer])}</b></p>`}
+          <p>${esc(q.explanation)}</p>
+          <div class="row">${canSpeak ? `<button data-act="readfb">🔊 Read this</button>` : ""}${last ? `<button class="primary" data-act="askSubmit">Finish and see my score</button>` : `<button class="primary" data-act="next">Next question →</button>`}</div>
+        </div>` : ""}
+      <div class="spread">
+        <button data-act="prev" ${i===0?"disabled":""}>← Back</button>
+        ${practice ? "" : `<button class="ghost" data-act="flag">${run.flags[i] ? "Unflag" : "Flag for review"}</button>`}
+        ${locked ? "" : last ? `<button class="primary" data-act="askSubmit">Finish</button>` : `<button ${practice ? "" : `class="primary"`} data-act="next">${practice ? "Skip →" : "Next →"}</button>`}
+      </div>
+    </section>
+    <section class="panel"><p class="eyebrow">Answer sheet</p>
+      <div class="nav">${ex.questions.map((qq,k) => { const a = run.answers[k]; const st = a < 0 ? "" : practice ? (a === qq.answer ? "ok" : "bad") : "ans"; return `<button data-act="go" data-i="${k}" class="${st} ${run.flags[k]?"flg":""} ${k===i?"cur":""}" aria-label="Question ${k+1}">${k+1}</button>`; }).join("")}</div>
+      <p class="muted" style="font-size:.85rem">${practice ? "Green = right · red = wrong." : "Filled = answered · orange line = flagged."} Your progress is kept on this device if you leave.</p>
+    </section>
+  </div>`;
+}
+
+async function askHint(){
+  const key = qkey(), ex = examById(run.examId), q = ex.questions[run.idx];
+  run.hinted[run.idx] = true; store.set(run);
+  if (q.hint || aiHints[key]?.text || !sample) return render();
+  aiHints[key] = {loading:true}; render();
+  try {
+    const r = await sample.json(`You help a learner with dyslexia practise for the ITIL Foundation (Version 5) exam.
+Write ONE short hint in plain, simple English (at most 25 words, short words). The hint must point the learner towards the right idea but must NOT say the answer or name the correct option.
+Reply with only JSON: {"hint":"..."}
+
+Question: ${q.prompt}
+Options:
+${q.options.map((o,k) => L[k]+". "+o).join("\n")}
+Correct answer (keep secret): ${q.options[q.answer]}
+Why it is correct: ${q.explanation}`, {modelTier:"quick"});
+    const t = String(r?.hint || "").trim();
+    aiHints[key] = t ? {text:t} : {error:"There is no hint for this question."};
+  } catch (e) {
+    aiHints[key] = {error: e?.code === "not_granted" || e?.code === "sampling_disabled" ? "Hints from Claude are switched off for this page." : e?.code === "rate_limited" ? "Too many requests. Try the hint again in a minute." : "Couldn't get a hint. Try again."};
+    if (aiHints[key].error) run.hinted[run.idx] = run.hinted[run.idx];
+  }
+  if (view === "exam") render();
+}
+
+async function askSimple(){
+  const key = qkey(), ex = examById(run.examId), q = ex.questions[run.idx];
+  if (simple[key]?.prompt) { showSimple[key] = !showSimple[key]; return render(); }
+  if (!sample || simple[key]?.loading) return;
+  simple[key] = {loading:true}; render();
+  try {
+    const r = await sample.json(`Rewrite this ITIL exam question in plain, simple English for a reader with dyslexia.
+Rules: short sentences; common everyday words; keep official ITIL terms exactly as written (for example "warranty", "value chain", "service offering"); keep the meaning of the question and of every option exactly the same; keep the 4 options in the same order; do not hint which option is correct.
+Reply with only JSON: {"prompt":"...","options":["...","...","...","..."]}
+
+Question: ${q.prompt}
+Options:
+${q.options.map((o,k) => (k+1)+". "+o).join("\n")}`, {modelTier:"quick"});
+    if (!r || typeof r.prompt !== "string" || !Array.isArray(r.options) || r.options.length !== 4 || r.options.some(o => typeof o !== "string")) throw {code:"invalid_json"};
+    simple[key] = {prompt:r.prompt.trim(), options:r.options.map(o => o.trim())}; showSimple[key] = true;
+  } catch (e) {
+    simple[key] = {error: e?.code === "not_granted" || e?.code === "sampling_disabled" ? "Simpler words from Claude are switched off for this page." : "Couldn't rewrite this question. Try again."};
+  }
+  if (view === "exam") render();
+}
+
+function readQuestion(){
+  const ex = examById(run.examId), q = ex.questions[run.idx], key = qkey();
+  const sv = showSimple[key] && simple[key]?.prompt ? simple[key] : null;
+  const opts = sv ? sv.options : q.options;
+  speak(`Question ${run.idx+1}. ${(sv ? sv.prompt : q.prompt).replace(/\[\?\]/g, "blank")} ` + opts.map((o,k) => `Option ${L[k]}. ${o}.`).join(" "));
+}
+function readFeedback(){
+  const ex = examById(run.examId), q = ex.questions[run.idx], ok = run.answers[run.idx] === q.answer;
+  speak((ok ? "Right! " : `Not right this time. The right answer is ${L[q.answer]}. ${q.options[q.answer]}. `) + q.explanation);
+}
+
+function renderResults(){
+  const a = attempts.find(x => x.id === lastAttemptId);
+  if (!a) { view = "home"; return renderHome(); }
+  const ex = examById(a.examId);
+  const qs = ex ? ex.questions : [];
+  const missed = qs.map((q,i) => ({q,i})).filter(({i}) => a.answers[i] !== qs[i].answer);
+  const list = reviewFilter === "missed" ? missed : qs.map((q,i) => ({q,i}));
+  const areas = AREAS.map(ar => ({...ar, v: a.byArea?.[ar.key] || {c:0,t:0}})).filter(ar => ar.v.t);
+  const latest = attempts[0] && attempts[0].id === a.id;
+  $view.innerHTML = `<div class="wrap" style="padding:0">
+    <div class="row"><button class="ghost" data-act="home">← Dashboard</button></div>
+    ${a.score === a.total ? `<div class="banner"><h2>40 out of 40. Perfect score.</h2><p>You've hit your goal. Build another exam to confirm it wasn't luck.</p></div>` : ""}
+    <div class="grid2">
+      <section class="panel">
+        <p class="eyebrow">Exam ${a.examN} · ${a.mode === "practice" ? "Practice mode" : "Exam mode"} · ${fmtDate(a.finishedAt)}</p>
+        <div class="row" style="align-items:flex-end;gap:16px"><p class="big mono">${a.score}<span class="muted" style="font-size:1.2rem">/${a.total}</span></p>${pill(a)}</div>
+        <p class="muted">${a.score >= 26 ? `That's a pass. ${a.total - a.score ? (a.total - a.score)+" to go for 40/40." : ""}` : `${26 - a.score} more correct needed to pass, ${a.total - a.score} to reach 40/40.`} Time used: <span class="mono">${mmss(a.durationSec||0)}</span>.${a.hinted?.length ? ` You used ${a.hinted.length} hint${a.hinted.length > 1 ? "s" : ""}. In the real exam there are no hints, so practise those topics again.` : ""}</p>
+        ${latest ? (gen ? genPanel() : sample ? `<button class="primary" data-act="gen">${a.score === a.total ? "Build another exam" : "Build my next exam from these mistakes"}</button>` : `<p class="status">Ask Claude in your chat for the next exam. It can read these results.</p>`) : ""}
+      </section>
+      <section class="panel"><h2>By exam area</h2>
+        <div class="tablewrap"><table><thead><tr><th>Area</th><th class="num">Score</th><th style="width:40%"></th></tr></thead><tbody>
+        ${areas.map(ar => { const p = ar.v.c/ar.v.t; return `<tr><td>${esc(ar.key)}</td><td class="num">${ar.v.c}/${ar.v.t}</td><td><div class="bar ${p<.6?"low":p<.85?"mid":""}"><i style="width:${Math.round(p*100)}%"></i></div></td></tr>`; }).join("")}
+        </tbody></table></div>
+      </section>
+    </div>
+    <section class="panel">
+      <div class="spread"><h2>Review</h2>
+        <div class="tabs"><button data-act="filter" data-f="missed" aria-pressed="${reviewFilter==="missed"}">Missed (${missed.length})</button><button data-act="filter" data-f="all" aria-pressed="${reviewFilter==="all"}">All (${qs.length})</button></div></div>
+      ${!ex ? `<div class="empty">This exam's questions are no longer available.</div>` : list.length === 0 ? `<div class="empty">Nothing missed. Every answer was correct.</div>` :
+        list.map(({q,i}) => { const you = a.answers[i]; const ok = you === q.answer; return `<article class="rev ${ok?"good":"bad"}">
+          <div class="qtag"><span class="chip">Q${i+1}</span><span class="chip">${esc(q.sub)}</span>${a.hinted?.includes(i) ? `<span class="chip" style="color:var(--flag)">hint used</span>` : ""}</div>
+          <p class="prompt" style="font-size:1rem">${esc(q.prompt)}</p>
+          ${ok ? `<div class="ans-line right"><span class="k">Your answer</span><span>${esc(q.options[q.answer])}</span></div>`
+               : `<div class="ans-line you"><span class="k">Your answer</span><span>${you >= 0 ? esc(q.options[you]) : "<i>Not answered</i>"}</span></div>
+                  <div class="ans-line right"><span class="k">Correct</span><span>${esc(q.options[q.answer])}</span></div>`}
+          <p class="expl">${esc(q.explanation)}</p></article>`; }).join("")}
+    </section>
+  </div>`;
+}
+
+/* ---------- actions ---------- */
+function startExam(id){
+  const ex = examById(id); if (!ex) return;
+  if (!(run && run.examId === id)) run = {examId:id, mode:prefs.mode, idx:0, answers:Array(ex.questions.length).fill(-1), flags:Array(ex.questions.length).fill(false), hinted:Array(ex.questions.length).fill(false), startedAt:Date.now()};
+  fixRun(run);
+  store.set(run); view = "exam"; confirmOpen = false; saveError = "";
+  startTick(); render(); window.scrollTo(0,0);
+}
+function startTick(){
+  clearInterval(tick);
+  tick = setInterval(() => {
+    if (view !== "exam" || !run) return clearInterval(tick);
+    const el = document.getElementById("timer"); if (!el) return;
+    const remain = 3600 - (Date.now() - run.startedAt)/1000;
+    el.innerHTML = remain > 0 ? "time left <b>"+mmss(remain)+"</b>" : "<b>time's up</b>";
+    el.classList.toggle("low", remain < 300);
+  }, 1000);
+}
+
+async function submitExam(){
+  const ex = examById(run.examId); if (!ex || saving) return;
+  saving = true; saveError = ""; render();
+  const byArea = {}, bySub = {}, wrong = [];
+  let score = 0;
+  ex.questions.forEach((q,i) => {
+    const ok = run.answers[i] === q.answer; if (ok) score++; else wrong.push(i);
+    byArea[q.area] = byArea[q.area] || {c:0,t:0}; byArea[q.area].t++; if (ok) byArea[q.area].c++;
+    bySub[q.sub] = bySub[q.sub] || {c:0,t:0}; bySub[q.sub].t++; if (ok) bySub[q.sub].c++;
+  });
+  const doc = {examId:ex.id, examN:ex.n, finishedAt:new Date().toISOString(), durationSec:Math.round((Date.now()-run.startedAt)/1000),
+    score, total:ex.questions.length, answers:run.answers.slice(), wrong, byArea, bySub,
+    mode:run.mode, hinted:run.hinted.map((h,i) => h ? i : -1).filter(i => i >= 0)};
+  try {
+    const ref = await db.collection("attempts").add(doc);
+    lastAttemptId = ref.id;
+    attempts = [{id:ref.id, ...doc}, ...attempts.filter(a => a.id !== ref.id)];
+    run = null; store.set(null); confirmOpen = false; view = "results"; reviewFilter = "missed";
+  } catch (e) {
+    saveError = e?.code === "quota_exceeded" ? "Storage is full, so this result couldn't be saved." : "Couldn't save your result. Check your connection and press Submit again.";
+  }
+  saving = false; hush(); render(); window.scrollTo(0,0);
+}
+
+/* ---------- generation ---------- */
+function allocate(area, weakMap){
+  const subs = area.subs, N = area.n;
+  if (subs.length === 1) return {[subs[0]]: N};
+  const BASEW = {"Value chain terms":2.2,"Guiding principles":1.6,"Lifecycle activity purposes":1.8,"Lifecycle nature":0.5,"Value System components":0.7,"Activity success metrics":0.9};
+  const w = subs.map(s => (BASEW[s]||1) * (1 + 3*(weakMap[s] !== undefined ? 1 - weakMap[s] : 0.25)));
+  const tot = w.reduce((a,b)=>a+b,0);
+  const raw = w.map(x => x/tot*N), base = raw.map(Math.floor);
+  if (N >= subs.length) base.forEach((b,i) => { if (b < 1) base[i] = 1; });
+  let left = N - base.reduce((a,b)=>a+b,0);
+  const order = raw.map((r,i)=>({i, f:r-Math.floor(r)})).sort((a,b)=>b.f-a.f);
+  let k = 0; while (left > 0) { base[order[k % order.length].i]++; left--; k++; }
+  while (left < 0) { const i = base.indexOf(Math.max(...base)); base[i]--; left++; }
+  return Object.fromEntries(subs.map((s,i)=>[s, base[i]]));
+}
+
+function buildPrompt(batch, weakMap, quotas){
+  const areas = AREAS.filter(a => batch.areas.includes(a.key));
+  const count = areas.reduce((s,a)=>s+a.n,0);
+  const quotaLines = areas.map(a => `- ${a.key}: ${a.n} questions → ` + Object.entries(quotas[a.key]).filter(([,n])=>n>0).map(([s,n])=>`"${s}" ×${n}`).join(", ")).join("\n");
+  const latest = attempts[0]; const lex = latest && examById(latest.examId);
+  const missed = lex ? latest.wrong.map(i => lex.questions[i]).filter(q => q && batch.areas.includes(q.area))
+      .map(q => `• [${q.sub}] ${q.prompt.slice(0,160).replace(/\s+/g," ")} → correct: ${q.options[q.answer].slice(0,120)}`).slice(0,20) : [];
+  const prev = exams.flatMap(e => e.questions).filter(q => batch.areas.includes(q.area)).map(q => "• " + q.prompt.slice(0,90).replace(/\s+/g," ")).slice(-120);
+  const weakTxt = Object.entries(weakMap).filter(([s,p]) => p < 1 && areas.some(a=>a.subs.includes(s))).map(([s,p]) => `${s} (${Math.round(p*100)}% correct)`).join("; ");
+  return `You are writing ORIGINAL practice questions for the PeopleCert ITIL Foundation (Version 5) exam for one learner whose goal is 40/40.
+
+Write exactly ${count} questions with this split by area and subtopic:
+${quotaLines}
+
+Rules:
+- Base every question strictly on the reference notes below. Use ITIL Version 5 terms (e.g. "Are we getting there?", the eight value chain activities, sustainability, digital product vendor, engage stakeholders). Never test ITIL 4 wording as correct.
+- Exactly 4 options, exactly one correct. Distractors must be plausible: usually the definition or name of a neighbouring ITIL concept.
+- Mix styles like the real exam: mostly standard and short scenario questions; about one in five "Which TWO statements about X are CORRECT?" list questions (put 4 numbered statements in the prompt separated by \\n, options like "1 and 3"); some "Identify the missing word(s) in the following sentence" questions with [?]; at most one negative "Which is NOT…" question per batch. About 40% recall, 60% understanding.
+- Test the same concepts the learner missed, but with new wording and new scenarios. Do not copy or lightly reword any previous question.
+- explanation: 1–3 short sentences saying why the answer is right and what the tempting wrong options actually are. Never refer to option letters or positions ("A", "option 2", "the first").
+- hint: one short sentence (at most 25 words) that points towards the right idea WITHOUT giving the answer or naming the correct option.
+- PLAIN ENGLISH (the learner has dyslexia): write the question, options, explanation and hint in simple everyday English. Short sentences (aim for under 20 words). Common words. No long chains of clauses, no double negatives, no jargon except official ITIL terms, which must stay exactly as ITIL writes them (for example "warranty", "value chain", "service offering", "Are we getting there?"). For gap questions write "Fill the gap: ..." with [?]. Simple wording must never change the ITIL meaning.
+${weakTxt ? `\nLearner's weakest subtopics: ${weakTxt}.` : ""}
+${missed.length ? `\nConcepts the learner got WRONG last time (re-test these concepts differently):\n${missed.join("\n")}` : ""}
+${prev.length ? `\nPrevious question stems — do not repeat these:\n${prev.join("\n")}` : ""}
+
+Reply with only a JSON array of ${count} objects:
+[{"area":"<one of: ${areas.map(a=>a.key).join(" | ")}>","sub":"<subtopic name exactly as listed above>","prompt":"...","options":["...","...","...","..."],"answer":0,"explanation":"...","hint":"..."}]
+"answer" is the 0-based index of the correct option.
+
+${REF}`;
+}
+
+function cleanBatch(raw, batch, quotas){
+  const arr = Array.isArray(raw) ? raw : Array.isArray(raw?.questions) ? raw.questions : [];
+  const areas = AREAS.filter(a => batch.areas.includes(a.key));
+  const out = {};
+  for (const a of areas) out[a.key] = [];
+  for (const it of arr) {
+    if (!it || typeof it.prompt !== "string" || !Array.isArray(it.options) || it.options.length !== 4) continue;
+    const ans = Number(it.answer); if (!Number.isInteger(ans) || ans < 0 || ans > 3) continue;
+    if (it.options.some(o => typeof o !== "string" || !o.trim())) continue;
+    let area = areas.find(a => a.key === it.area) || areas.find(a => a.subs.includes(it.sub)) || (areas.length === 1 ? areas[0] : null);
+    if (!area) continue;
+    const sub = area.subs.includes(it.sub) ? it.sub : area.subs[0];
+    // shuffle options so correct answers spread across A–D
+    const idx = [0,1,2,3].sort(() => Math.random() - 0.5);
+    const options = idx.map(i => String(it.options[i]).trim());
+    out[area.key].push({area:area.key, sub, prompt:it.prompt.trim(), options, answer: idx.indexOf(ans), explanation: String(it.explanation||"").trim(), hint: String(it.hint||"").trim()});
+  }
+  const result = [];
+  for (const a of areas) {
+    if (out[a.key].length < a.n) return {error:`Only ${out[a.key].length} usable "${a.key}" questions came back (needed ${a.n}).`};
+    result.push(...out[a.key].slice(0, a.n));
+  }
+  return {questions: result};
+}
+
+async function generate(){
+  if (!sample || !db) return;
+  const n = (exams.reduce((m,e)=>Math.max(m,e.n),0)) + 1;
+  const weakMap = Object.fromEntries(weakness().map(w => [w.sub, w.pct]));
+  const quotas = Object.fromEntries(AREAS.map(a => [a.key, allocate(a, weakMap)]));
+  if (!gen || gen.n !== n) gen = {n, steps: BATCHES.map(b => ({label:b.label, state:"wait", got:0, qs:null}))};
+  gen.error = ""; gen.running = true; gen.ctl = new AbortController();
+  render();
+  const signal = gen.ctl.signal;
+  await Promise.all(BATCHES.map(async (b, bi) => {
+    const st = gen.steps[bi]; if (st.state === "done") return;
+    st.state = "run"; render();
+    try {
+      const raw = await sample.json(buildPrompt(b, weakMap, quotas), {signal, modelTier:"default", cache:false});
+      const r = cleanBatch(raw, b, quotas);
+      if (r.error) { st.state = "error"; gen.error = r.error + " Press Try again."; }
+      else { st.state = "done"; st.qs = r.questions; st.got = r.questions.length; }
+    } catch (e) {
+      st.state = "error";
+      const c = e?.code;
+      gen.error = c === "cancelled" ? "Stopped." :
+        c === "not_granted" || c === "sampling_disabled" ? "Claude isn't allowed to write questions on this page. Ask Claude in your chat for the next exam instead." :
+        c === "rate_limited" ? "You've hit a usage limit. Wait a little, then press Try again." :
+        c === "invalid_json" ? "The questions came back in a broken format. Press Try again." :
+        "Something went wrong while writing questions. Press Try again.";
+    }
+    render();
+  }));
+  gen.running = false;
+  if (gen.steps.every(s => s.state === "done")) {
+    const order = ["Key terms","Four Dimensions","Lifecycle","Value System","Value streams","AI","Other frameworks"];
+    const questions = gen.steps.flatMap(s => s.qs).sort((a,b) => order.indexOf(a.area) - order.indexOf(b.area));
+    const focus = weakness().filter(w => w.pct < 1).slice(0,4).map(w => w.sub);
+    try {
+      await db.doc("exams/e" + n).set({n, title:"Exam "+n, createdAt:new Date().toISOString(), source:"generated", simple:true, focus, questions});
+      exams = [...exams.filter(e => e.n !== n), {id:"e"+n, n, focus, questions}].sort((a,b)=>a.n-b.n);
+      gen = null; view = "home";
+    } catch (e) { gen.error = "The exam was written but couldn't be saved. Press Try again."; }
+  }
+  render();
+}
+
+/* ---------- events ---------- */
+$view.addEventListener("change", e => {
+  if (e.target.matches('input[type="radio"]') && run) {
+    if (run.mode === "practice") { if (run.answers[run.idx] >= 0) return; run.answers[run.idx] = Number(e.target.value); store.set(run); hush(); render(); document.querySelector(".feedback")?.scrollIntoView({block:"nearest"}); return; }
+    run.answers[run.idx] = Number(e.target.value); store.set(run);
+    document.querySelectorAll(".opt").forEach(l => l.classList.toggle("sel", l.querySelector("input").checked));
+    const b = document.querySelector(`.nav button[data-i="${run.idx}"]`); if (b) b.classList.add("ans");
+    const chip = document.getElementById("answeredN"); if (chip) chip.textContent = run.answers.filter(v=>v>=0).length;
+  }
+});
+$view.addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  const act = b.dataset.act;
+  if (act === "start") return startExam(b.dataset.id);
+  if (act === "home") { view = "home"; return render(); }
+  if (act === "review") { lastAttemptId = b.dataset.id; view = "results"; reviewFilter = "missed"; render(); return window.scrollTo(0,0); }
+  if (act === "filter") { reviewFilter = b.dataset.f; return render(); }
+  if (act === "gen") return generate();
+  if (act === "stopgen") { gen?.ctl?.abort(); return; }
+  if (act === "closegen") { gen = null; return render(); }
+  if (act === "mode") { prefs.mode = b.dataset.v; savePrefs(); return render(); }
+  if (act === "size") { prefs.size = Number(b.dataset.v); savePrefs(); return render(); }
+  if (act === "easy") { prefs.easy = b.dataset.v === "1"; savePrefs(); return render(); }
+  if (!run) return;
+  const ex = examById(run.examId);
+  if (act === "hint") return askHint();
+  if (act === "simple") return askSimple();
+  if (act === "readq") return readQuestion();
+  if (act === "readfb") return readFeedback();
+  if (["prev","next","go","exit","submit"].includes(act)) hush();
+  if (act === "prev" && run.idx > 0) run.idx--;
+  else if (act === "next" && run.idx < ex.questions.length-1) run.idx++;
+  else if (act === "go") run.idx = Number(b.dataset.i);
+  else if (act === "flag") run.flags[run.idx] = !run.flags[run.idx];
+  else if (act === "askSubmit") confirmOpen = true;
+  else if (act === "cancelSubmit") confirmOpen = false;
+  else if (act === "submit") return submitExam();
+  else if (act === "exit") { view = "home"; store.set(run); clearInterval(tick); render(); return; }
+  store.set(run); render();
+  if (["prev","next","go"].includes(act)) document.querySelector(".prompt")?.scrollIntoView({block:"nearest"});
+});
+document.addEventListener("keydown", e => {
+  if (view !== "exam" || !run || e.target.closest("textarea") || (e.target.matches("input") && e.key.startsWith("Arrow"))) return;
+  const ex = examById(run.examId); if (!ex) return;
+  const k = e.key.toLowerCase();
+  if (["a","b","c","d","1","2","3","4"].includes(k)) { if (run.mode === "practice" && run.answers[run.idx] >= 0) return; const i = "abcd".includes(k) ? "abcd".indexOf(k) : Number(k)-1; run.answers[run.idx] = i; store.set(run); hush(); render(); }
+  else if (e.key === "Enter" && run.mode === "practice" && run.answers[run.idx] >= 0 && run.idx < ex.questions.length-1 && !e.target.closest("button")) { run.idx++; store.set(run); hush(); render(); }
+  else if (e.key === "ArrowRight" && run.idx < ex.questions.length-1) { run.idx++; store.set(run); hush(); render(); }
+  else if (e.key === "ArrowLeft" && run.idx > 0) { run.idx--; store.set(run); hush(); render(); }
+});
+
+/* ---------- boot ---------- */
+run = fixRun(store.get());
+render();
+(async () => {
+  const C = window.claude;
+  const use = n => { try { return C && C.use ? Promise.resolve(C.use(n)).catch(()=>null) : Promise.resolve(null); } catch { return Promise.resolve(null); } };
+  const [d, s] = await Promise.all([use("db"), use("sample")]);
+  db = d; sample = s;
+  if (!db) { loadedExams = loadedAttempts = true; return render(); }
+  db.collection("exams").orderBy("n").onSnapshot(snap => {
+    exams = snap.docs.filter(d => d.exists).map(d => ({id:d.id, ...d.data()}))
+      .filter(e => Array.isArray(e.questions) && e.questions.length);
+    loadedExams = true;
+    if (run && !examById(run.examId) && loadedExams) { /* exam removed */ }
+    if (view !== "exam") render();
+  }, () => { loadedExams = true; render(); });
+  db.collection("attempts").orderBy("finishedAt","desc").onSnapshot(snap => {
+    attempts = snap.docs.filter(d => d.exists).map(d => ({id:d.id, ...d.data()}));
+    loadedAttempts = true;
+    if (view !== "exam") render();
+  }, () => { loadedAttempts = true; render(); });
+})();
+})();
+</script>
+
+
+</body>
+</html>
